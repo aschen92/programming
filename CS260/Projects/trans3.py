@@ -1,0 +1,119 @@
+# trans3.py
+#    functions for transforming Vector3 objects
+
+from math import *
+from vec3 import *
+from matrix import *
+
+X = 0
+Y = 1
+Z = 2
+
+def transPt(m, pt):
+    """ Transform pt (Vector3) as a point
+
+    >>> m = [[1,0,-2,2], [3,-1,1,0], [-1,-1,3,3], [0,0,0,1]]
+    >>> transPt(m, Vector3(1,2,3))
+    Vector3(-3.0,4.0,9.0)
+    """
+
+    pt = pt.tuple()
+    ptMat = []
+    for i in range(len(pt)):
+        ptMat.append([pt[i]])
+
+    ptMat.append([1])
+
+    matAns = matMult(m,ptMat)
+    
+    ans = []
+    
+    for j in range(len(matAns)):
+        ans.append(matAns[j][0])
+
+    return Vector3(ans[0],ans[1],ans[2])
+
+
+def transVec(m, v):
+    """ Transform v (Vector3) as a vector
+
+    >>> m = [[1,0,-2,2], [3,-1,1,0], [-1,-1,3,3], [0,0,0,1]]
+    >>> transVec(m, Vector3(1,2,3))
+    Vector3(-5.0,4.0,6.0)
+    """
+
+
+    vec = v.tuple()
+    vecMat = []
+    for i in range(len(vec)):
+        vecMat.append([vec[i]])
+
+    vecMat.append([0])
+
+    matAns = matMult(m,vecMat)
+    
+    ans = []
+    
+    for j in range(len(matAns)):
+        ans.append(matAns[j][0])
+
+    return Vector3(ans[0],ans[1],ans[2])
+    
+
+def translate(x=0.,y=0.,z=0.):
+    """ return a matrix that translates by x, y, and z
+    
+    >>> transPt(translate(1,2,3), Vector3(1,2,3))
+    Vector3(2.0,4.0,6.0)
+    >>> transVec(translate(1,2,3), Vector3(1,2,3))
+    Vector3(1.0,2.0,3.0)
+    """
+
+    return [[1,0,0,x],[0,1,0,y],[0,0,1,z],[0,0,0,1]]
+
+    
+
+
+def scale(x=1.,y=1.,z=1.):
+    """ return a matrix that scales by x, y, z
+    
+    >>> transPt(scale(.5,1,2),Vector3(2,1,.5))
+    Vector3(1.0,1.0,1.0)
+    >>> transVec(scale(.5,1,2), Vector3(-1,-3,2))
+    Vector3(-0.5,-3.0,4.0)
+    """
+    
+    return [[x,0,0,0],[0,y,0,0],[0,0,z,0],[0,0,0,1]]
+
+    
+def rotate(theta, ux, uy, uz):
+    """ return a matrix rotates 
+    >>> transVec(rotate(180, 1, 4, 2), Vector3(1,2,3))
+    Vector3(0.428571428571,3.71428571429,-0.142857142857)
+    """
+
+    ux,uy,uz = Vector3(ux,uy,uz).normalized().tuple()
+    theta = radians(theta)
+    c = cos(theta)
+    s = sin(theta)
+
+    
+    return [[c+(1-c)*ux**2, (1-c)*uy*ux-s*uz, (1-c)*uz*ux+s*uy,0],
+     [(1-c)*ux*uy+s*uz, c+(1-c)*uy**2, (1-c)*uz*uy-s*ux,0],
+     [(1-c)*ux*uz-s*uy, (1-c)*uy*uz+s*ux, c+(1-c)*uz**2,0],
+     [0, 0, 0, 1]]
+
+def refX():
+    return [[1,0,0,0],[0,-1,0,0],[0,0,1,0],[0,0,0,1]]
+
+def refY():
+    return [[-1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]]
+
+def refZ():
+    return [[1,0,0,0],[0,1,0,0],[0,0,-1,0],[0,0,0,1]]
+
+
+
+if __name__ == '__main__':
+   import doctest
+   doctest.testmod()

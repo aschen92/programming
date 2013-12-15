@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+# file: shell-shell.py
+
+import os, sys
+
+
+# Modify this function to implement your shell
+#   This version just prints out the command line arguments.
+def execute(args):
+    print("args: ")
+    for arg in args:
+        print(arg,)
+    print
+
+def main():
+    while True: # An infinite loop
+        try:
+            commandLine = input("your prompt% ")
+        except:
+            break  # Quit shell on interrupt or end-of-file
+        if commandLine == "exit":
+            break  # Quit shell on exit
+        if commandLine == "" :
+            continue # Reprint prompt on blank line.
+        if commandLine.strip() != "":
+            # split at spaces to create list of strings.
+            args = commandLine.split() 
+            # pass the list of strings to the execute command.
+            execute(args)
+
+main()
+

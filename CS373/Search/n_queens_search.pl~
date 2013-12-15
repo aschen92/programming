@@ -1,0 +1,8 @@
+problem_size(8).
+
+
+succ(B0,R1,B1):-
+	B0 = [R0/C0|_],
+	problem_size(N),
+	between(1,N,R1),
+	

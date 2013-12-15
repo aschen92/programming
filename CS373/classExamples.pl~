@@ -1,0 +1,6 @@
+% in class learning
+
+member(H,[H|T]).
+
+member(X,[H|T]):-
+	member(X,T).

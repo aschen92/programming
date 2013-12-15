@@ -1,0 +1,87 @@
+<html>
+<heading>
+<title> Project: Probing the Limits of Search</title>
+<style TYPE="text/css">
+li {margin-bottom: .1in;}
+</style>
+</heading>
+
+</body>
+<h1> Project: Probing the Limits of Search</h1>
+<hr>
+
+This project is open-ended.  Your goal is to try out some different
+search stategies in the Eight Puzzle and Vacuum Cleaner World to
+arrive at some conclusions concerning the size/complexity of the
+problems that can be solved using various techniques.  You should
+perform searches using breadth-first, iterative deepening, iterative
+deepening with cycle-check, and iterative deepening with cycle-check
+and heuristic pruning (ida* to be discussed in class). Optionally, you
+might also try implementing breadth-first graph search (cycle
+checking) and A* (to be discussed in class).
+
+Your tasks are:
+<ol>
+
+<li> Experiment with various uninformed search algorithms on the
+eight-puzzle problem (bf_search, id_search).
+
+<li> Complete the successor and solution predicates for vc_world.pl.
+
+<li> Design some Vacuum World test environments of differing
+complexity levels.  You might use the random generator to suggest some
+for you. See how well bf_search and id_search do.  Also, how do they
+do on "average" (random) problems for a given size environment.
+(e.g. is breadth-first search a reasonble strategy for 2x2 rooms?
+What about 3x3, 4x4 and larger?
+
+<li> Extend id_search with cycle checking and analyze its performance on both
+eight-puzzle and vacuum world. Does it help or hurt?
+
+<li> Code up the Manhattan distance heuristic for the 8-puzzle and see
+how much it helps, using ida_search. Your heuristic "function" will be
+a predicate h(state, H) the returns the H value of a state.
+
+<li> Add cycle checking to the ida_search and try it out.
+
+<li> Try to devise some useful heuristics for the vaccum
+world. Initially try using 2*(number of dirty cells). You might want
+to tweak the ida_search so that it takes the heuristic predicate as a
+parameter; then you can easily try out some variations.
+
+<li> Try to come up with some better heuristics, implement them and
+compare.
+
+<li> You might also try your hand at writing some other search
+algorithms and trying them on these problems. Here are some
+  suggestions:
+<p>
+<ul>
+    <li>breadth-first graph search (bf with cycle checking).
+    <li>A* algorithm (bf plus heuristic)
+    <li>ida_search with random operator ordering
+</ul>
+
+<li> Write up your results and conclusions. It helps if you keep
+careful track as you go along of what you tried and what the results
+were. Be sure to hand in any code you write, as well.
+</ol>
+
+<p> <b>Have Fun!</b>
+
+<h2> Resources: </h2>
+All of these can be found in the search subdirectory of the handouts folder.
+<ul>
+<li> Implemented search algorithms: iterative deepening
+  (df_searches.pl), breadth-first search (bf_search.pl), iterative
+  deepening with heuristic pruning (ida_search.pl).
+<li> Complete search formulation for the 8 puzzle (eightpuzzle.pl).
+<li> Seed code for Vacuum World searching (vc_world.pl).
+<li> Useful predicates for timing stuff (time.pl).
+<li> Description of the data structure libraries for use with this
+  project (search_data_structs.html). Also the queue (queues.pl) and
+  set (sets.pl) libraries. Heaps are part of the SWI-Prolog standard library.
+</ul>
+ </body>
+</html>
+

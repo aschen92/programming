@@ -1,0 +1,146 @@
+from __future__ import division
+
+# Aaron Schendel
+# Gorgeous Frisbee Scene
+# 5/24/12
+
+from visual import *
+
+
+#set some scene parameters
+scene.ambient=.4            # brighten scene with more ambient light
+scene.background=(.7,.7,1)  # light blue
+                          
+box(pos=(0,-110,0), length = 600, width = 500, height= 10, opacity = .3, color = (0,1,0))
+
+# Removes the standard distant lighting
+scene.lights = []
+
+
+# Sun
+sun = sphere(pos = (300,400,-300), radius = 55, color = (1,1,0),material=materials.emissive)
+local_light(pos = (300,400,-300))
+
+
+
+# Person 1
+curve(pos = [(-200,-100,100),(-200,-50,110),(-200,-100,120)],radius = 3,color = (.739,.708,.707)) #legs
+curve(pos = [(-200,-50,110),(-200,0,110)],radius = 3,color = (.739,.708,.707)) #torso
+curve(pos = [(-200,-25,110),(-200,-42,90)],radius = 3,color = (.739,.708,.707)) #left arm
+
+ru1 = cylinder(pos = (-200,-25,110), axis = (0,-8.5,10),radius = 3, color = (.739,.708,.707)) #right upper arm
+rl1 = cylinder(pos = (-200,-33.5,120), axis = (25,-8.5,10), radius = 3, color = (.739,.708,.707)) #right lower arm
+sphere(pos = (-200,0,110),radius = 15,color = (.739,.708,.707)) #head
+sphere(pos = (-188,3,115),radius = 3, color = (0,0,0)) #eye
+sphere(pos = (-188,3,105),radius = 3, color = (0,0,0)) #eye
+curve(pos = [(-188,-6,105),(-188,-6,115)],radius = 2, color = (1,0,0)) #mouth
+
+
+
+
+# Person 2
+curve(pos = [(150,-100,60),(150,-50,70),(150,-100,80)],radius = 3,color = (.739,.708,.707)) #legs
+curve(pos = [(150,-50,70),(150,0,70)],radius= 3,color = (.739,.708,.707)) #torso
+curve(pos = [(150,-25,70),(150,-42,90)],radius = 3,color = (.739,.708,.707)) #left arm
+ru2 = cylinder( pos = (150,-25,70), axis = (0,-8.5,-10), radius = 3, color = (.739,.708,.707)) #right upper arm
+rl2 = cylinder( pos = (150,-33.5,60), axis = (-25,-8.5,-10), radius = 3, color = (.739,.708,.707)) #right lower arm
+sphere(pos = (150,0,70),radius = 15,color = (.739,.708,.707)) #head
+sphere(pos = (138,3,75),radius = 3, color = (0,0,0)) #eye
+sphere(pos = (138,3,65),radius = 3, color = (0,0,0)) #eye
+curve(pos = [(138,-6,65),(138,-6,75)],radius = 2, color = (1,0,0)) #mouth
+
+
+
+# Tree 1
+cone(pos = (-200,-101,-150), axis = (0,100,0), radius = 30, color = (.5225,.2705,.0714))
+cylinder(pos = (-200,-60,-150), axis = (0,120,0), radius = 15, color = (.5225,.2705,.0714))
+sphere(pos = (-200,75,-150), radius = 40, color = (0,1,0))
+sphere(pos = (-170,75,-150), radius = 40, color = (0,1,0))
+sphere(pos = (-230,75,-150), radius = 40, color = (0,1,0))
+sphere(pos = (-200,75,-120), radius = 40, color = (0,1,0))
+sphere(pos = (-200,75,-180), radius = 40, color = (0,1,0))
+sphere(pos = (-200,120,-150), radius = 40, color = (0,1,0))
+
+# Tree 2
+cone(pos = (0,-101,-150), axis = (0,100,0), radius = 30, color = (.5225,.2705,.0714))
+cylinder(pos = (0,-60,-150), axis = (0,120,0), radius = 15, color = (.5225,.2705,.0714))
+sphere(pos = (0,75,-150), radius = 40, color = (0,1,0))
+sphere(pos = (30,75,-150), radius = 40, color = (0,1,0))
+sphere(pos = (-30,75,-150), radius = 40, color = (0,1,0))
+sphere(pos = (0,75,-120), radius = 40, color = (0,1,0))
+sphere(pos = (0,75,-180), radius = 40, color = (0,1,0))
+sphere(pos = (0,120,-150), radius = 40, color = (0,1,0))
+
+# Tree 3
+cone(pos = (200,-101,-150), axis = (0,100,0), radius = 30, color = (.5225,.2705,.0714))
+cylinder(pos = (200,-60,-150), axis = (0,120,0), radius = 15, color = (.5225,.2705,.0714))
+sphere(pos = (200,75,-150), radius = 40, color = (0,1,0))
+sphere(pos = (230,75,-150), radius = 40, color = (0,1,0))
+sphere(pos = (170,75,-150), radius = 40, color = (0,1,0))
+sphere(pos = (200,75,-120), radius = 40, color = (0,1,0))
+sphere(pos = (200,75,-180), radius = 40, color = (0,1,0))
+sphere(pos = (200,120,-150), radius = 40, color = (0,1,0))
+
+
+# Build the frisbee
+frisbee = frame()
+Ring = ring(frame = frisbee, pos = (-160,-42,130), radius = 15, axis = (0,1,0))
+Cyl = cylinder(frame = frisbee, pos = (-160,-42,130), radius = 14.9, axis = (0,1.45,0))
+
+#ring(pos = (115,-42,45),radius = 15, axis = (0,1,0))
+#cylinder(pos = (115,-42,45),radius = 14.9, axis = (0,1.45,0))
+        
+#--------------------------------------------------------------------------------------------------
+scene.mouse.getclick()
+
+
+for j in range(10):
+    
+
+    # Moves the arm/frisbee back to throw
+    for l in range(10):
+        rate(10)
+        ru1.axis = (-(l),-8.5,10)
+        rl1.pos = (-200 - l,-33.5,120)
+        Ring.pos = (-160-l,-42,130)
+        Cyl.pos = (-160-l,-42,130)
+
+
+    # Throws the frisbee
+    ru1.axis = (0,-8.5,10)
+    rl1.axis = (25,-8.5,10)
+    rl1.pos = (-200,-33.5,120)
+    Ring.pos = (-160,-42,130)
+    Cyl.pos = (-160,-42,130)
+
+    #print(Ring.pos)
+
+
+    # Loop to show animation of the frisbee
+    for i in range(275):
+        rate(300)
+        frisbee.pos = (i,0, (85/275)*(-i))
+    
+
+    # Moves the arm/frisbee back to throw on the second drawing.
+    for g in range(10):
+        rate(30)
+        ru2.axis = (g,-8.5,-10) 
+        rl2.pos = (150+g,-33.5,60)
+        #Ring.pos = (-90+g,-42,25)
+        #Cyl.pos = (-90+g,-42,45)
+
+
+    # Throws the frisbee
+    ru2.axis = (0,-8.5,-10)
+    rl2.axis = (-25,-8.5,-10)
+    rl2.pos = (150,-33.5,60)
+    #Ring.pos = (115,-42,45)
+    #Cyl.pos = (115,-42,45)
+
+
+    # Loop to return the disc
+    for k in range(275,0,-1):
+        rate(300)
+        frisbee.pos = (k,0, (85/275)*(-k))
+        

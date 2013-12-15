@@ -1,0 +1,261 @@
+# Aaron Schendel
+# util.py
+#   utility class and functions for raytracer
+
+from __future__ import division, print_function
+
+from vec3 import *
+
+class Ray: 
+
+    def __init__(self, start, dir):
+        """ A ray beginning at start going in direction dir.
+        start is a point, and dir is a vector, both are represented
+        using a Vector3 object.
+
+        >>> r = Ray(Vector3(0,1,2), Vector3(1,2,1))
+        >>> r.start
+        Vector3(0.0,1.0,2.0)
+        >>> r.dir
+        Vector3(1.0,2.0,1.0)
+        """
+
+        self.start = start
+        self.dir = dir
+        
+
+    def __repr__(self):
+        """ Returns printable and evalable representation of Ray
+        >>> Ray(Vector3(0,1,2), Vector3(1,2,3))
+        Ray(Vector3(0.0,1.0,2.0),Vector3(1.0,2.0,3.0))
+        """
+        #self.start = Vector3(self.start.x,self.start.y,self.start.z)
+        #self.dir = Vector3(self.dir.x,self.dir.y,self.dir.z)
+        
+        return "{0}({1},{2})".format('Ray',self.start,self.dir)
+        
+
+    def pointAt(self, t):
+        """ returns point on ray at time t
+        
+        >>> r = Ray(Vector3(0,1,2), Vector3(1,2,3))
+        >>> r.pointAt(0)
+        Vector3(0.0,1.0,2.0)
+        >>> r.pointAt(1)
+        Vector3(1.0,3.0,5.0)
+        >>> r.pointAt(3.75)
+        Vector3(3.75,8.5,13.25)
+        """
+
+        return self.start + self.dir * t
+        
+#----------------------------------------------------------------------
+class Interval:
+
+    """Simple representation of an open interval"""
+
+    def __init__(self, low=0.0, high=float("inf")):
+        """
+        >>> myInterval = Interval()
+        >>> myInterval.low
+        0.0
+        >>> myInterval.high
+        inf
+        >>> myInterval = Interval(.001,200)
+        >>> myInterval.low
+        0.001
+        >>> myInterval.high
+        200.0
+        """
+
+        self.low = float(low)
+        self.high = float(high)
+        
+    def __repr__(self):
+        """
+        >>> Interval()
+        Interval(0.0,inf)
+        >>> Interval(0.5, 200)
+        Interval(0.5,200.0)
+        """
+
+        return "{0}({1},{2})".format('Interval',self.low,self.high)
+
+    def __contains__(self, t):
+        """ returns True iff t is strictly inside this interval
+        >>> inter = Interval(2,100)
+        >>> 0 in inter
+        False
+        >>> 5 in inter
+        True
+        >>> 100 in inter
+        False
+        """
+
+        return self.low < t < self.high
+
+#----------------------------------------------------------------------
+class RGB:
+
+    def __init__(self, r,g,b):
+        """ representaiton of color using 3 floating point values
+        in the range 0--1.
+
+        >>> c = RGB(.3, .3, .75)
+        >>> c
+        RGB(0.3,0.3,0.75)
+        >>> c.r
+        0.3
+        >>> c.g
+        0.3
+        >>> c.b
+        0.75
+        """
+
+        self.r = float(r)
+        self.g = float(g)
+        self.b = float(b)
+
+    def __repr__(self):
+        return "RGB({0},{1},{2})".format(self.r, self.g, self.b)
+
+
+    def quantize(self, top):
+        """ return a tuple of ints all in range(top+1)
+        >>> RGB(.3, .3, .75).quantize(255)
+        (77, 77, 191)
+        >>> RGB(.5, .8, 1.1).quantize(255)
+        (128, 204, 255)
+        """
+        r = min(int(round(self.r * top)), 255)
+        g = min(int(round(self.g * top)), 255)
+        b = min(int(round(self.b * top)), 255)
+
+        return (r,g,b)
+
+    def scalarMult(self, scale):
+        r = self.r * scale
+        g = self.g * scale
+        b = self.b * scale
+
+        return RGB(r,g,b)
+
+    def __add__(self, other):
+        
+        return RGB(self.r + other.r, self.g + other.g, self.b + other.b)
+
+
+    def __mul__(self, other):
+        return RGB(self.r * other.r, self.g * other.g, self.b * other.b)
+
+#----------------------------------------------------------------------
+class HitInfo: #t, point, normal color
+
+    """Information about the point where a ray intersects a surface
+    
+    Specifically: t -- time of hit
+                  point -- Vector3 of the coordinates of point of intersection
+                  normal -- Vector3 unit vector normal to the surface
+                  color -- RGB giving the color of the surface
+    """
+
+    def __init__(self, t=0, point=Vector3(0,0,0), normal=Vector3(0,1,0), color = RGB(0,0,0)):
+        """Create HitInfo having the given values."""
+
+        self.t = float(t)
+        self.point = point
+        self.normal = normal
+        self.color = color
+
+
+    def fill(self, t, pt, normal, color):
+        """Sets the time, point, normal and color info"""
+
+        self.t = t
+        self.point = pt
+        self.normal = normal
+        self.color = color
+        
+
+    def __repr__(self):
+        return "HitInfo({0}, {1}, {2}, {3})".format(
+            self.t, self.point, self.normal, self.color)
+#----------------------------------------------------------------------
+
+class Camera:
+    """
+    >>> c = Camera()
+    >>> c.setEyeDistance(50)
+    >>> c.eyeDistance
+    50
+    >>> c.setView(eye=(3,5,10), lookat=(0,5,0), up=(0,1,0))
+    >>> c.setWindowSize(200,200)
+    >>> c.window
+    (-100, -100, 100, 100)
+    >>> c.setView(eye=(3,5,10), lookat=(0,5,0), up=(0,1,0))
+    >>> c.u
+    Vector3(0.957826285221,0.0,-0.287347885566)
+    >>> c.v
+    Vector3(-0.0,1.0,0.0)
+    >>> c.w
+    Vector3(0.287347885566,0.0,0.957826285221)
+    >>> c.setResolution(50,50)
+    >>> c.ijRay(0,0)
+    Ray(Vector3(3.0,5.0,10.0),Vector3(-108.23437023,-98.0,-19.7312214756))
+    >>> c.ijRay(49,49)
+    Ray(Vector3(3.0,5.0,10.0),Vector3(79.4995816734,98.0,-76.0514070466))
+    >>> c.ijRay(25,25)
+    Ray(Vector3(3.0,5.0,10.0),Vector3(-12.4517417079,2.0,-48.4660100322))
+    """
+
+    def __init__(self):
+        self.eye = Vector3(0, 0, 10)
+        self.window = (-10, -10, 10, 10) # left, bottom, right, top
+        self.dx = .1                     # horizontal distance between pixels
+        self.dy = .1                     # vertical distance between pixels
+        self.u = Vector3(1,0,0)       
+        self.v = Vector3(0,1,0)
+        self.w = Vector3(0,0,-1)
+        self.eyeDistance = 10
+        self.nx = 10
+        self.ny = 10
+
+    def setEyeDistance(self, d):
+        self.eyeDistance = d
+
+    def setView(self, eye, lookat, up):
+
+        self.eye = Vector3(*eye)
+        self.lookat = Vector3(*lookat)
+        self.up = Vector3(*up)
+
+        
+        self.w = (self.eye - self.lookat).normalized()
+        self.w = self.w
+        self.u = self.up.cross(self.w)
+        self.v = self.w.cross(self.u)
+
+    def setWindowSize(self, width, height):
+        w1 = -width/2
+        w2 = width/2
+        h1 = -height/2
+        h2 = height/2
+
+        self.window = (w1,h1,w2,h2)
+
+    def setResolution(self, width, height):
+        l,b,r,t = self.window
+        self.dx = (r-l)/width
+        self.dy = (t-b)/height
+
+    def ijRay(self, i, j):
+        l,b,r,t = self.window
+        return Ray(self.eye, self.eyeDistance * -self.w + (l + (i + .5) * self.dx) * self.u + ((b + (j + .5) * self.dy) * self.v))
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
+
+
+

@@ -1,0 +1,129 @@
+# image.py
+#   Class for manipulation of simple ppm images
+
+# Make Python 2.7 look like Python 3
+from __future__ import division, print_function; input = raw_input
+
+
+import array
+
+class Image(object):
+
+    """Simple Image class. Allows pixel-level access and saving
+    and loading of PPM images.
+
+    Examples:
+    >>> img = Image(640, 480)    # create a 640x480 image
+    >>> img.getPixel((200,200))  # get color at pixel (200,200)
+    (0, 0, 0)
+    >>> img.setPixel((200,200), (255, 0, 0)) # set pixel to bright red
+    >>> img.getPixel((200,200))  # get color of the pixel back again
+    (255, 0, 0)
+    >>> img.size
+    (640, 480)
+    >>> img.savePPM('reddot.ppm') # save image to a ppm file
+    >>> img.loadPPM('canoe.ppm')  # load a ppm image
+    >>> img.size
+    (800, 600)
+    >>> img.clear((255,255,255)) # make image all white
+    >>> ofile = open('blank.ppm', 'wb')
+    >>> img.tofile(ofile)
+    >>> ofile.close()   # blank.ppm is 800x600 all white
+    
+    """
+    
+
+    def __init__(self, width, height):
+        """Creates an image object of the given width and height
+        Initially, the image is all black.
+        """
+        
+        self.size = (width, height)
+        self.pixels = array.array("B", [0 for i in range(3*width*height)])
+
+
+    def setPixel(self, pos, rgb):
+        """ Set the color of a pixel.
+        pos in a pair (col, row) giving a pixel location.
+        rgb is a triple (R,G,B) of ints in range(256) representing
+            the intensity of red, green, and blue for this pixel.
+        NOTE: if pos lies outside the image, this function does nothing.
+        """
+
+        pix = self.__base__(pos)
+        
+        if pix < len(self.pixels):
+            for i in range(3):
+                self.pixels[int(pix+i)] = rgb[i]
+
+
+    def getPixel(self, pos):
+        """ Get the color of a pixel
+        pos is a pair (row, col) giving the pixel location
+        returns a triple (red, green, blue) for pixel color.
+        """
+
+        pix = self.__base__(pos)
+        
+        if pix < len(self.pixels):
+            r = self.pixels[pix]
+            g = self.pixels[pix + 1]
+            b = self.pixels[pix + 2]
+
+        return (r,g,b)
+
+        
+    def tofile(self, ofile):
+        """ Save image to a PPM file
+        ofile is a binary file opened for writing
+        """
+        
+        print("P6",file=ofile)
+        width,height = self.size
+        print(width,height,file=ofile)
+        print(255, file=ofile)
+        self.pixels.tofile(ofile)
+
+
+    def savePPM(self, fname):
+        ofile = open(fname, "wb")
+        self.tofile(ofile)
+        ofile.close()
+
+    def loadPPM(self, fname):
+        """load PPM file from fname.
+        Note: The width and height of this image will be adjusted
+                to match what is found in the file.
+        """
+        infile = open(fname,"rb")
+
+        x = infile.readline()
+        sizes = infile.readline()
+        infile.readline() # read max value
+        width,height = sizes.split()
+        width,height = int(width),int(height)
+        self.size = width,height
+
+        self.pixels = array.array("B")
+        self.pixels.fromfile(infile, 3*width*height)
+
+    def clear(self, rgb):
+        """ set every pixel in Image to RGB
+        rgb is a triple: (R, G, B)
+        """
+
+        for i in range(len(self.pixels)):
+            self.pixels[i] = rgb[i%3]
+
+    def __base__(self, loc):
+        w,h = self.size
+        column,row = loc
+        rowskip = w * ((h-1) - row)
+        return 3 * (rowskip + column)
+
+
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
+

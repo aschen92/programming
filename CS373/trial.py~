@@ -1,0 +1,5 @@
+def max(L):
+    ans = L[0]
+    for i in range(L:):
+        if L[i] < ans:
+            L[i] = ans

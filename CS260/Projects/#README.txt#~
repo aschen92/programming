@@ -1,0 +1,72 @@
+Week 1 Projects
+Using python 2.7
+Aaron Schendel
+-----------------
+
+Required Project: Complete and test the image.py file. 
+
+image.py: Required project
+     by: Aaron Schendel
+     status: complete and working
+     run: in terminal run "python image.py"
+     note: will save files "reddot.ppm", "blank.ppm", and is dependent on        "canoe.ppm"
+
+--------------------------------------------------------------------------
+
+Required Project: Write and test at least 2 image processing algorithms.
+
+sepia.py: Required project
+     by: Aaron Schendel
+     status: complete and working
+     run: in terminal run "python sepia.py <infilename> <outfilename>"
+
+negative.py: Required project
+     by: Aaron Schendel
+     status: complete and working
+     run: in terminal run "python sepia.py <infilename> <outfilename>"
+
+grayscale.py: Optional project
+     by: Aaron Schendel
+     status: complete and working
+     run: in terminal run "python grayscale.py <infilename> <outfilename>"
+
+--------------------------------------------------------------------------
+
+Required Project: Complete and test the Canvas class. 
+Required Project: Add fillRectangle, fillCircle, and fillTriangle methods to your canvas class.
+
+canvas.py: Required project
+     by: Aaron Schendel
+     status: complete and working
+     run: in terminal run "python canvas.py"
+     note: will save "canvas_test.ppm". 
+
+--------------------------------------------------------------------------
+
+Required Project: Use the Canvas class to draw at least one interesting picture.
+
+dat_reader.py: Required project
+     by: Aaron Schendel
+     status: complete and working
+     run: in terminal run "python dat_reader.py"
+     note: use "drawing" as the input name and choose any output name
+
+--------------------------------------------------------------------------
+
+Required Project: Complete and test the Vector3 class. 
+
+vec3.py: Required project
+     by: Aaron Schendel
+     status: complete and working
+     run: in terminal run "python vec3.py"
+     note: there will be no output which shows that all tests were passed
+
+--------------------------------------------------------------------------
+
+Required Project: Write a Vpython program that draws a scene of your own choosing. 
+
+frisbee.py: Required project
+     by: Aaron Schendel
+     status: complete and working
+     run: in terminal run "python frisbee.py"
+     note: will open a Vpython window and the frisbee will move upon receipt of  a mouseclick.

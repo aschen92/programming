@@ -1,0 +1,4 @@
+from image import *
+
+def sunset(img):
+    w,h = 

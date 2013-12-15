@@ -1,0 +1,11 @@
+class(cs373, time(mwf, 10:45, 11:50),
+      instructor(zelle, john), location(sc, 345)).
+
+teacher(Last, First):-
+    class(_,_, instructor(Last,First), ).
+
+teaches(Instructor, Class):-
+    class(Class,_,Instructor,_)
+
+start_time(Class,Time):-
+    class(Class, time(_,Time,_),_,_).

@@ -1,0 +1,52 @@
+#lineart.py
+from __future__ import division, print_function
+
+from canvas2 import *
+
+def main():
+    infile = open("drawing.dat")
+    total = int(infile.readline())
+    strokes = []
+    for i in range(total):
+        length = int(infile.readline())
+        points = []
+        for j in range(length):
+            x,y = infile.readline().split()
+            x = int(x)
+            y = int(y)
+            points.append((x,y))
+        strokes.append(points)
+
+        
+    def drawDino(c,strokes):
+        for s in strokes:
+            c.drawLines(*s)
+        
+    c = Canvas(640,480)
+    c.scale(.5,.25)
+    drawDino(c,strokes)
+    
+
+    c.setCoords(0,0,640,480)
+    c.translate(320,240)
+    c.scale(.2,.5)
+    c.translate(-320,-240)
+    drawDino(c,strokes)
+
+    c.setCoords(0,0,640,480)
+    c.translate(400,410)
+    c.scale(.75,.25)
+    c.translate(-320,-240)
+    drawDino(c,strokes)
+
+    c.setCoords(0,0,640,480)
+    c.translate(500,200)
+    c.rotate(180)
+    c.scale(.2,.2)
+    c.translate(-320,-240)
+    drawDino(c,strokes)
+
+
+    c.getImage().savePPM("drawing.ppm")
+
+main()

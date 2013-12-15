@@ -1,0 +1,16 @@
+from visual import *
+
+#set some scene parameters
+scene.ambient=.4            # brighten scene with more ambient light
+scene.background=(.7,.7,1)  # light blue
+#scene.stereo = "passive"   # choices "redblue" or "passive" 
+#scene.stereodepth = 1.5    # 0 front edge screen,
+                            # 1 center on screen
+                            # 2 back edge on screen
+                          
+#create a grey pentagonal base for the scene
+basePts=[(-100,-100,-100),(100,-100,-100),
+         (100,-100,100),(0,-100,150),(-100,-100,100)]
+convex(pos=basePts,color = (.75,.75,.75))
+
+

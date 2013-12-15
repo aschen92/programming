@@ -1,0 +1,221 @@
+# canvas2.py
+
+#  Class for simple 2D drawing with transformations
+# [window trans] * [trans] * [scale] * draw circle
+
+from __future__ import division, print_function
+
+from math import pi, sin, cos, radians
+from image import *
+from matrix import *
+
+X = 0
+Y = 1
+
+class Canvas(object):
+
+    def __init__(self, width, height, background=(255,255,255)):
+        self.color = (0,0,0)  # default color is black
+        self.img = Image(width, height)
+        self.img.clear(background)
+        self.transform = matID(3)
+        self.transformStack = []
+        self.background = background
+
+
+    def getImage(self):
+        return self.img
+
+
+    def setColor(self, rgb):
+        self.color = rgb
+
+
+    def draw(self, loc):
+        # set pixel nearest to loc to current color
+        col = int(loc[X]+.5)
+        row = int(loc[Y]+.5)
+        self.img.setPixel((col,row), self.color)
+
+
+    def drawLine(self, a, b):
+
+        a = self._trans(a)
+        b = self._trans(b)
+        
+        img = self.img
+        if a == b:   # handle degenerate case
+            self.draw(a)
+            return 
+        dx = b[X] - a[X]
+        dy = b[Y] - a[Y]
+        if abs(dx) > abs(dy): # x changes faster, walk it
+            if a[X] > b[X]:
+                a,b = b,a
+            yinc = (b[Y]-a[Y])/(b[X]-a[X])
+            y = a[Y]
+            for x in range(a[X], b[X]+1):
+                self.draw((x,y))
+                y += yinc
+        else:                 # y changes faster, walk it
+            if a[Y] > b[Y]:
+                a,b = b,a
+            xinc = (b[X]-a[X])/(b[Y]-a[Y])
+            x = a[X]
+            for y in range(a[Y], b[Y]+1):
+                self.draw((x,y))
+                x += xinc
+
+
+    def drawLines(self, *vertices):
+        curr = vertices[0]
+        for v in vertices[1:]:
+            self.drawLine(curr,v)
+            curr = v
+
+
+    def drawPolygon(self, *vertices):
+        self.drawLines(*vertices)
+        self.drawLine(vertices[-1], vertices[0])
+
+
+    def fillPolygon(self, *vertices):
+        sumx = 0
+        sumy = 0
+        for v in vertices:
+            sumx += v[0]
+            sumy += v[1]
+        n = len(vertices)
+        center = sumx/n, sumy/n
+        curr = vertices[0]
+        for v in vertices[1:]:
+            self.fillTriangle(curr, v, center)
+            curr = v
+        self.fillTriangle(curr, vertices[0], center)
+
+
+    def _circlePoints(self, center, radius, segments=50):
+        xc, yc = center
+        dtheta = pi * 2/segments
+        theta = 0
+        vertices = []
+        while theta<pi*2:
+            x = radius*cos(theta)+xc
+            y = radius*sin(theta)+yc
+            vertices.append((x,y))
+            theta += dtheta
+        return vertices
+        
+            
+    def drawCircle(self, center, radius, segments = 50):
+        self.drawPolygon(*self._circlePoints(center, radius, segments))
+
+
+    def fillCircle(self, center, radius, segments = 50):
+        self.fillPolygon(*self._circlePoints(center, radius, segments))
+
+
+    def fillTriangle(self, a, b, c):
+
+        a = self._trans(a)
+        b = self._trans(b)
+        c = self._trans(c)
+
+        def f(p0, p1, x , y):
+            x0,y0 = p0
+            x1,y1 = p1
+            return (y0-y1)*x + (x1-x0)*y + x0*y1-x1*y0
+
+        for x in range(min(a[X],b[X],c[X]), max(a[X],b[X],c[X])+1):
+            for y in range(min(a[Y],b[Y],c[Y]), max(a[Y],b[Y],c[Y])+1):
+                # compute barycentric coordinates of (x,y)
+                alpha = f(b,c,x,y)/f(b,c,a[X],a[Y])
+                beta =  f(a,c,x,y)/f(a,c,b[X],b[Y])
+                gamma = f(a,b,x,y)/f(a,b,c[X],c[Y])
+
+                # draw if point is inside
+                if alpha>=0 and beta >=0 and gamma >=0:
+                    self.draw((x,y))
+
+    
+
+    def _trans(self, loc):
+        # apply transform to loc and return nearest pixel location (int,int)
+
+        result = matApply(self.transform, (loc + (1,)))
+        x = int(round(result[0]))
+        y = int(round(result[1]))
+        return (x,y)
+
+
+
+    def setCoords(self, xll, yll, xur, yur):
+        """ set the transform to establish coordinates for the canvas """
+
+        w, h = self.img.size
+        xscale = (w-1)/(xur-xll)
+        yscale = (h-1)/(yur-yll)
+
+        coordMat = [[xscale,0,-xscale*xll],[0,yscale,-yscale*yll],[0,0,1]]
+
+        self.transform = coordMat
+
+
+    def saveTransform(self):
+        """ save current transform on transform stack"""
+
+        self.transformStack.append(self.transform)
+
+    def restoreTransform(self):
+        """ set transform to last saved transform and pop the transform stack
+        """
+
+        self.transform = self.transformStack.pop()
+
+
+    def scale(self, sx, sy):
+        """ post-multiply current transform by a transforms that scales by
+        sx in the x direction and sy in the y direction.
+        """
+        
+        scaleTrans = [[sx,0,0],[0,sy,0],[0,0,1]]
+
+        self.transform = matMult(self.transform,scaleTrans) 
+        
+
+    def rotate(self, angle):
+        """ post-multiply the transform by one that rotates angle degress
+        counter-clockwise.
+        """
+        
+        angle = radians(angle)
+
+        rotTrans = [[cos(angle),-sin(angle),0],[sin(angle),cos(angle),0],[0,0,1]]
+
+        self.transform = matMult(self.transform,rotTrans)
+
+    def translate(self, dx, dy):
+        """ post-multiply the transform by one that translates dx units in
+        the x direction and dy units in the y direction
+        """
+        
+        transMat = [[1,0,dx],[0,1,dy],[0,0,1]]
+
+        self.transform = matMult(self.transform,transMat)
+
+
+if __name__ == "__main__":
+    c = Canvas(400,300)
+    c.setCoords(0,0,3,3)
+    c.drawLine((1,0), (1,3))
+    c.drawLine((2,0), (2,3))
+    c.drawLine((0,1), (3,1))
+    c.drawLine((0,2), (3,2))
+    c.getImage().savePPM("setCoords_test.ppm")
+    c.drawCircle((1.5,1.5), .4)
+    c.fillCircle((.5,2.5), .4)
+    c.setColor((255,255,255))
+    c.fillCircle((.5, 2.5), .3)
+    c.getImage().savePPM("circle_test.ppm")
+    
+    
